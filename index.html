@@ -1,1 +1,114 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Seller Assistant</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:#f0f2f5;padding:12px}.card{background:#fff;max-width:480px;margin:0 auto;border-radius:16px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.08)}.h{text-align:center;margin-bottom:12px}.h h1{color:#0d5a3a}label{font-size:12px;color:#555;font-weight:bold;margin:8px 0 3px;display:block}input{width:100%;padding:11px;border:1.5px solid #ddd;border-radius:9px;margin-bottom:6px;font-size:14px}.btn{width:100%;padding:14px;background:#00c853;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:bold;margin-top:10px}canvas{max-width:100%;border-radius:12px;margin-top:12px}#wrap{display:none;text-align:center}.profit{background:#e8f5e9;padding:10px;border-radius:8px;margin:10px 0;font-weight:bold;color:#0d5a3a;display:none;text-align:center}</style></head><body><div class="card"><div class="h"><h1>My Business</h1><p>Beautiful Receipt for Any Seller</p></div><label>YOUR BUSINESS INFO</label><input id="biz" placeholder="Business Name e.g Deji Stores"><input id="phone" placeholder="Phone e.g +234 801 234 5678"><input id="handle" placeholder="Instagram e.g @deji_stores"><input id="addr" placeholder="Address e.g Lekki, Lagos"><label>TRANSACTION</label><input id="prod" placeholder="Product e.g Shoe"><input id="cost" type="number" placeholder="Cost Price e.g 5000"><input id="price" type="number" placeholder="Selling Price e.g 8000"><input id="cust" placeholder="Customer Name e.g Tobi"><button class="btn" onclick="make()">Create Beautiful Receipt ✨</button><div id="profit" class="profit"></div><div id="wrap"><canvas id="cv" width="700" height="820"></canvas><br><button class="btn" onclick="dl()" style="margin-top:10px">Download Receipt Image</button></div></div><script>function make(){let biz=(document.getElementById('biz').value||"MY BUSINESS").toUpperCase(),phone=document.getElementById('phone').value||"+234 801 234 5678",handle=document.getElementById('handle').value||"@mybusiness",addr=document.getElementById('addr').value||"Lagos, Nigeria",prod=document.getElementById('prod').value||"Product",cost=+document.getElementById('cost').value||0,price=+document.getElementById('price').value||0,cust=document.getElementById('cust').value||"Customer";if(!price){alert("Put selling price");return}let profit=price-cost,d=new Date(),date=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+" • "+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+" WAT",rno="REC-"+Math.floor(100000+Math.random()*900000);document.getElementById('profit').style.display="block";document.getElementById('profit').innerText="YOUR PRIVATE PROFIT: NGN "+profit.toLocaleString();let c=document.getElementById('cv'),x=c.getContext('2d');x.fillStyle="#fdfcf7";x.fillRect(0,0,700,820);x.strokeStyle="#1a5c2e";x.lineWidth=3;x.setLineDash([8,6]);x.strokeRect(12,12,676,796);x.setLineDash([]);x.fillStyle="#1a5c2e";x.font="bold 28px serif";x.textAlign="center";x.fillText(biz,350,70);x.font="10px sans-serif";x.fillText("PREMIUM • "+addr.toUpperCase(),350,90);x.fillStyle="#1a5c2e";x.fillRect(80,100,540,1
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Business Receipt</title>
+<style>
+body{background:#f0f2f5;padding:12px;font-family:sans-serif}
+.card{background:#fff;max-width:480px;margin:0 auto;border-radius:16px;padding:18px}
+h1{text-align:center;color:#0d5a3a;margin-bottom:10px}
+label{font-size:11px;font-weight:bold;color:#555;margin-top:8px;display:block}
+input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:9px;margin-top:3px;font-size:14px}
+button{width:100%;padding:14px;background:#00c853;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:12px;font-size:16px}
+#profit{display:none;background:#e8f5e9;padding:10px;border-radius:8px;margin-top:10px;text-align:center;color:#0d5a3a;font-weight:bold}
+#wrap{display:none;text-align:center;margin-top:12px}
+canvas{max-width:100%;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.15)}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Receipt Maker</h1>
+<label>Business Name</label>
+<input id="biz" placeholder="e.g Deji Stores">
+<label>Phone Number</label>
+<input id="phone" placeholder="e.g +234 801 234 5678">
+<label>Instagram</label>
+<input id="ig" placeholder="e.g @deji_stores">
+<label>Address</label>
+<input id="addr" placeholder="e.g Lekki, Lagos">
+<label>Product</label>
+<input id="prod" placeholder="e.g Shoe">
+<label>Cost Price</label>
+<input id="cost" type="number" placeholder="e.g 5000">
+<label>Selling Price</label>
+<input id="price" type="number" placeholder="e.g 8000">
+<label>Customer Name</label>
+<input id="cust" placeholder="e.g Tobi">
+<button onclick="make()">Create Beautiful Receipt ✨</button>
+<div id="profit"></div>
+<div id="wrap">
+<canvas id="cv" width="600" height="700"></canvas><br>
+<button onclick="dl()">Download Receipt</button>
+</div>
+</div>
+<script>
+function make(){
+var biz = document.getElementById('biz').value || "MY BUSINESS";
+var phone = document.getElementById('phone').value || "+234 801 234 5678";
+var ig = document.getElementById('ig').value || "@mybusiness";
+var addr = document.getElementById('addr').value || "Lagos, Nigeria";
+var prod = document.getElementById('prod').value || "Product";
+var cost = Number(document.getElementById('cost').value) || 0;
+var price = Number(document.getElementById('price').value) || 0;
+var cust = document.getElementById('cust').value || "Customer";
+if(price==0){alert("Please enter Selling Price");return;}
+var profit = price - cost;
+var d = new Date();
+var dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+var rno = "REC-" + Math.floor(100000+Math.random()*900000);
+document.getElementById('profit').style.display="block";
+document.getElementById('profit').innerText = "YOUR PROFIT: NGN " + profit;
+var c = document.getElementById('cv');
+var x = c.getContext('2d');
+x.fillStyle = "#fffdf5";
+x.fillRect(0,0,600,700);
+x.strokeStyle = "#1a5c2e";
+x.lineWidth = 2;
+x.strokeRect(10,10,580,680);
+x.fillStyle = "#1a5c2e";
+x.font = "bold 26px serif";
+x.textAlign = "center";
+x.fillText(biz.toUpperCase(),300,60);
+x.font = "11px sans-serif";
+x.fillText(addr,300,80);
+x.fillStyle = "#000";
+x.font = "bold 36px sans-serif";
+x.fillText("RECEIPT",300,120);
+x.font = "12px sans-serif";
+x.fillText("Thank you for shopping!",300,140);
+x.textAlign = "left";
+x.font = "12px sans-serif";
+x.fillText("Receipt No: #"+rno,20,180);
+x.fillText("Date: "+dateStr,20,200);
+x.fillText("Customer: "+cust,20,220);
+x.fillText("Product: "+prod,20,240);
+x.fillStyle = "#1a5c2e";
+x.fillRect(20,260,560,1);
+x.fillStyle = "#000";
+x.font = "bold 20px sans-serif";
+x.fillText("TOTAL PAID:",20,300);
+x.textAlign = "right";
+x.fillText("NGN "+price.toLocaleString(),580,300);
+x.textAlign = "center";
+x.fillStyle = "#1a5c2e";
+x.fillRect(20,330,560,50);
+x.fillStyle = "#fff";
+x.font = "bold 20px sans-serif";
+x.fillText("THANK YOU!",300,360);
+x.fillStyle = "#1a5c2e";
+x.font = "12px sans-serif";
+x.fillText(ig+" | "+phone,300,410);
+x.fillText(addr,300,430);
+document.getElementById('wrap').style.display="block";
+}
+function dl(){
+var c=document.getElementById('cv');
+var a=document.createElement('a');
+a.download="receipt.png";
+a.href=c.toDataURL();
+a.click();
+}
+</script>
+</body>
+</html>
