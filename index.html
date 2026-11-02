@@ -1,114 +1,72 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Business Receipt</title>
-<style>
-body{background:#f0f2f5;padding:12px;font-family:sans-serif}
-.card{background:#fff;max-width:480px;margin:0 auto;border-radius:16px;padding:18px}
-h1{text-align:center;color:#0d5a3a;margin-bottom:10px}
-label{font-size:11px;font-weight:bold;color:#555;margin-top:8px;display:block}
-input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:9px;margin-top:3px;font-size:14px}
-button{width:100%;padding:14px;background:#00c853;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:12px;font-size:16px}
-#profit{display:none;background:#e8f5e9;padding:10px;border-radius:8px;margin-top:10px;text-align:center;color:#0d5a3a;font-weight:bold}
-#wrap{display:none;text-align:center;margin-top:12px}
-canvas{max-width:100%;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.15)}
-</style>
-</head>
-<body>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tee Collection - ₦15k Elite</title>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:#eef6f0}.top{background:linear-gradient(135deg,#0a3d1f,#00c853);padding:22px;color:#fff;border-radius:0 0 28px 28px;text-align:center}.badge{display:inline-block;background:gold;color:#000;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px;margin-top:8px}.card{max-width:480px;margin:-16px auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.09)}.f{display:flex;align-items:center;background:#f6faf7;border:1.5px solid #e6efe8;border-radius:14px;padding:12px;margin-bottom:11px}.f input{border:none;outline:none;background:transparent;width:100%;font-weight:600}.i{width:36px;height:36px;border-radius:10px;background:#d6f5d9;display:flex;align-items:center;justify-content:center;margin-right:10px}.btn{width:100%;padding:15px;border:none;border-radius:14px;font-weight:800;color:#fff;cursor:pointer;margin-top:10px;font-size:14px}.gr{background:linear-gradient(135deg,#0a8a33,#00c853)}.go{background:linear-gradient(135deg,#111,#444)}.wh{background:#fff;color:#0a8a33;border:2px solid #0a8a33}.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}#out{display:none;text-align:center;margin-top:16px}canvas{max-width:100%;border-radius:14px}</style>
+</head><body>
+<div class="top"><h1>🧾 Tee Collection ELITE</h1><p>Netflix-Style ₦15k Pro</p><div class="badge" id="badge">FREE PLAN • 3/day</div><p id="exp" style="font-size:11px;margin-top:6px"></p></div>
 <div class="card">
-<h1>Receipt Maker</h1>
-<label>Business Name</label>
-<input id="biz" placeholder="e.g Deji Stores">
-<label>Phone Number</label>
-<input id="phone" placeholder="e.g +234 801 234 5678">
-<label>Instagram</label>
-<input id="ig" placeholder="e.g @deji_stores">
-<label>Address</label>
-<input id="addr" placeholder="e.g Lekki, Lagos">
-<label>Product</label>
-<input id="prod" placeholder="e.g Shoe">
-<label>Cost Price</label>
-<input id="cost" type="number" placeholder="e.g 5000">
-<label>Selling Price</label>
-<input id="price" type="number" placeholder="e.g 8000">
-<label>Customer Name</label>
-<input id="cust" placeholder="e.g Tobi">
-<button onclick="make()">Create Beautiful Receipt ✨</button>
-<div id="profit"></div>
-<div id="wrap">
-<canvas id="cv" width="600" height="700"></canvas><br>
-<button onclick="dl()">Download Receipt</button>
-</div>
+<div class="f"><div class="i">📧</div><input id="email" type="email" placeholder="Your email (for ₦15k receipt)"></div>
+<div class="f"><div class="i">🏪</div><input id="biz" placeholder="Business e.g Tee collection"></div>
+<div class="f"><div class="i">📦</div><input id="prod" placeholder="Product e.g Designer Shoe"></div>
+<div class="row"><div class="f"><div class="i">₦</div><input id="cost" type="number" placeholder="Cost"></div><div class="f"><div class="i">₦</div><input id="price" type="number" placeholder="Selling ₦"></div></div>
+<div class="f"><div class="i">👤</div><input id="cust" placeholder="Customer e.g Tobi"></div>
+<button class="btn gr" onclick="make()">Create Receipt ✨</button>
+<div id="out"><canvas id="cv" width="600" height="700"></canvas><br><br><button class="btn gr" onclick="save()">📥 Download</button></div>
+
+<button class="btn go" onclick="pay()" id="subBtn">🔓 SUBSCRIBE ₦15,000/month - Card, Transfer, USSD (Auto)</button>
+<button class="btn wh" onclick="manual()">🏦 Or Pay via Direct Opay Transfer: 07065053875</button>
+<p style="font-size:10px;text-align:center;margin-top:10px;color:#666">Paystack Test Card: 4084 0840 8408 4080 • Exp 12/30 • CVV 123 • PIN 0000 • OTP 123456<br>Transfer: Select Bank Transfer inside Paystack popup</p>
 </div>
 <script>
+const PK = "pk_test_5c3a31ed232c74aa05225";
+let isPrem = localStorage.getItem('isPremium')==='yes';
+let subExp = localStorage.getItem('subExpiry');
+function upd(){
+let b=document.getElementById('badge'), e=document.getElementById('exp'), btn=document.getElementById('subBtn');
+if(isPrem && subExp){
+ let ex=new Date(subExp);
+ if(new Date()>ex){localStorage.setItem('isPremium','no');isPrem=false;b.innerText="FREE PLAN • Expired";b.style.background="tomato";b.style.color="#fff";e.innerText="Expired "+ex.toLocaleDateString();btn.innerText="🔓 RENEW Premium ₦15,000 - Transfer Available";}
+ else{b.innerText="⭐ ELITE ₦15k ACTIVE";b.style.background="#00c853";b.style.color="#fff";e.innerText="Active till "+ex.toLocaleDateString();btn.innerText="✅ Premium Active";btn.style.opacity=".7";}
+}else{b.innerText="FREE PLAN • 3/day limit";}
+}upd();
+function pay(){
+let email=document.getElementById('email').value;
+if(!email||!email.includes('@')){alert('Enter valid email first!');return}
+let h=PaystackPop.setup({
+key:PK,
+email:email,
+amount:15000*100,
+currency:'NGN',
+channels: ['card', 'bank', 'ussd', 'bank_transfer', 'mobile_money'],
+ref:'ELITE-'+Date.now(),
+callback:function(r){
+alert('Payment successful! 🎉 Ref:'+r.reference);
+let ex=new Date();ex.setMonth(ex.getMonth()+1);
+localStorage.setItem('isPremium','yes');
+localStorage.setItem('subExpiry',ex.toISOString());
+localStorage.setItem('payRef',r.reference);
+isPrem=true;subExp=ex.toISOString();upd();
+alert('✅ Premium unlocked like Netflix! Unlimited receipts for 1 month - Transfer confirmed!');
+},
+onClose:function(){alert('Payment window closed - you can still pay via Opay 07065053875')}
+});h.openIframe();
+}
+function manual(){
+alert('DIRECT OPAY TRANSFER:\n\n1. Transfer ₦15,000 to:\nOpay: 07065053875\nName: Tee Collection\n\n2. WhatsApp receipt to 07065053875\n\n3. I go send you unlock code ELITE15K\n\nPaystack auto option dey faster - e dey unlock instantly like Netflix!');
+}
 function make(){
-var biz = document.getElementById('biz').value || "MY BUSINESS";
-var phone = document.getElementById('phone').value || "+234 801 234 5678";
-var ig = document.getElementById('ig').value || "@mybusiness";
-var addr = document.getElementById('addr').value || "Lagos, Nigeria";
-var prod = document.getElementById('prod').value || "Product";
-var cost = Number(document.getElementById('cost').value) || 0;
-var price = Number(document.getElementById('price').value) || 0;
-var cust = document.getElementById('cust').value || "Customer";
-if(price==0){alert("Please enter Selling Price");return;}
-var profit = price - cost;
-var d = new Date();
-var dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString();
-var rno = "REC-" + Math.floor(100000+Math.random()*900000);
-document.getElementById('profit').style.display="block";
-document.getElementById('profit').innerText = "YOUR PROFIT: NGN " + profit;
-var c = document.getElementById('cv');
-var x = c.getContext('2d');
-x.fillStyle = "#fffdf5";
-x.fillRect(0,0,600,700);
-x.strokeStyle = "#1a5c2e";
-x.lineWidth = 2;
-x.strokeRect(10,10,580,680);
-x.fillStyle = "#1a5c2e";
-x.font = "bold 26px serif";
-x.textAlign = "center";
-x.fillText(biz.toUpperCase(),300,60);
-x.font = "11px sans-serif";
-x.fillText(addr,300,80);
-x.fillStyle = "#000";
-x.font = "bold 36px sans-serif";
-x.fillText("RECEIPT",300,120);
-x.font = "12px sans-serif";
-x.fillText("Thank you for shopping!",300,140);
-x.textAlign = "left";
-x.font = "12px sans-serif";
-x.fillText("Receipt No: #"+rno,20,180);
-x.fillText("Date: "+dateStr,20,200);
-x.fillText("Customer: "+cust,20,220);
-x.fillText("Product: "+prod,20,240);
-x.fillStyle = "#1a5c2e";
-x.fillRect(20,260,560,1);
-x.fillStyle = "#000";
-x.font = "bold 20px sans-serif";
-x.fillText("TOTAL PAID:",20,300);
-x.textAlign = "right";
-x.fillText("NGN "+price.toLocaleString(),580,300);
-x.textAlign = "center";
-x.fillStyle = "#1a5c2e";
-x.fillRect(20,330,560,50);
-x.fillStyle = "#fff";
-x.font = "bold 20px sans-serif";
-x.fillText("THANK YOU!",300,360);
-x.fillStyle = "#1a5c2e";
-x.font = "12px sans-serif";
-x.fillText(ig+" | "+phone,300,410);
-x.fillText(addr,300,430);
-document.getElementById('wrap').style.display="block";
+let c=Number(localStorage.getItem('receiptCount')||0), today=new Date().toDateString(), last=localStorage.getItem('receiptDate'); if(last!==today){c=0;localStorage.setItem('receiptDate',today)}
+if(!isPrem && c>=3){alert('Free limit 3/day reached! Subscribe ₦15k - Card, Transfer, USSD available!');pay();return}
+let biz=document.getElementById('biz').value||"Tee collection", prod=document.getElementById('prod').value||"Shoe", price=Number(document.getElementById('price').value)||15000, cust=document.getElementById('cust').value||"Customer", cv=document.getElementById('cv'), x=cv.getContext('2d');
+x.fillStyle="#fdfcf7";x.fillRect(0,0,600,700);x.strokeStyle="#0a8a33";x.lineWidth=2.5;x.setLineDash([10,7]);x.strokeRect(12,12,576,676);x.setLineDash([]);
+x.fillStyle="#000";x.font="bold 26px serif";x.textAlign="center";x.fillText(biz.toUpperCase(),300,65);
+x.font="bold 40px serif";x.fillText("RECEIPT",300,125);
+x.textAlign="left";x.font="13px sans-serif";x.fillText("RECEIPT #ELITE-"+Math.floor(100000+Math.random()*900000),22,190);
+x.fillText("CUSTOMER: "+cust,22,212); x.fillText("ITEM: "+prod,22,234);
+x.font="bold 24px sans-serif";x.fillText("TOTAL: ₦"+price.toLocaleString(),22,275);
+if(!isPrem){x.font="9px sans-serif";x.fillStyle="#999";x.textAlign="center";x.fillText("Made with Tee Collection FREE - Subscribe ₦15k to remove",300,320)}
+x.fillStyle="#0a8a33";x.fillRect(22,360,556,50);x.fillStyle="#fff";x.font="bold 20px sans-serif";x.textAlign="center";x.fillText("THANK YOU!",300,390);
+document.getElementById('out').style.display="block"; if(!isPrem){c++;localStorage.setItem('receiptCount',c);localStorage.setItem('receiptDate',today)} window.scrollTo(0,document.body.scrollHeight)
 }
-function dl(){
-var c=document.getElementById('cv');
-var a=document.createElement('a');
-a.download="receipt.png";
-a.href=c.toDataURL();
-a.click();
-}
-</script>
-</body>
-</html>
+function save(){let c=document.getElementById('cv'),a=document.createElement('a');a.download="Tee-Receipt.png";a.href=c.toDataURL();a.click()}
+</script></body></html>
